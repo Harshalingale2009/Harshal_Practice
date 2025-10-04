@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: MariaDB
+  name: mariadb
 spec: 
   selector: 
-    app: MariaDB
+    app: mariadb
   ports: 
     - port: 3306
       targetPort: 3306
@@ -16,19 +16,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: MariaDB
+  name: mariadb
 spec:       
   selector:
     matchLabels: 
-      app: MariaDB
+      app: mariadb
   template: 
     metadata:
       labels: 
-        app: MariaDB
+        app: mariadb
     spec:
       containers: 
-       - name: Mariadb
-         image: MariaDB:latest
+       - name: mariadb
+         image: mariadb:latest
          env:
             -name: MYSQL_ROOT_PASSWORD
              value: "redhat"  
