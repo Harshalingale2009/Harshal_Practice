@@ -1,0 +1,82 @@
+# --------- MariaDB ---------
+apiVersion: v1
+kind: Service
+metadata: 
+  name: mariadb
+spec:
+  selector: 
+    app: mariadb
+  ports:
+    - port: 3306
+      targetPort: 3306
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name:mariadb
+spec: 
+  selector:
+    matchLabel:
+      app: mariadb
+    template:
+      metadata:
+        labels:
+          app: mariadb
+      spec:
+        containers:
+          - name: mariadb
+            image: mariadb:latest
+            env:  
+              - name: MYSQL_ROOT_PASSWORD
+                value: "redhat"
+              - name: MYSQL_DATABASE
+                value: "student_db"
+            ports:
+              - containerPort: 3306
+
+# --------- Backend ---------
+---
+apiVersion: v1
+kind: Service
+metadata:
+  app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector: 
+    matchLabel:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: yugajoshi/student-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASS
+              value: "redhat"
+
+# --------- config.js for Frontend ---------
+---
+
