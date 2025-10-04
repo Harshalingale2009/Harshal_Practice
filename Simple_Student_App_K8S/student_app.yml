@@ -93,7 +93,7 @@ metadata:
   data:
   config.js: |
     window.APP_CONFIG = {
-      API_URL: "http://3.110.116.87:30080/api"
+      API_URL: "http://54.242.214.85:30080/api"
     };
 
 # --------- Frontend ---------
