@@ -1,96 +1,92 @@
-#---------MariaDB---------
+# --------- MariaDB ---------
 apiVersion: v1
 kind: Service
 metadata:
   name: mariadb
-spec: 
-  selector: 
+spec:
+  selector:
     app: mariadb
-  ports: 
+  ports:
     - port: 3306
       targetPort: 3306
   type: ClusterIP
-
 ---
-
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: mariadb
-spec:       
+spec:
   selector:
-    matchLabels: 
+    matchLabels:
       app: mariadb
-  template: 
+  template:
     metadata:
-      labels: 
+      labels:
         app: mariadb
     spec:
-      containers: 
-       - name: mariadb
-         image: mariadb:latest
-         env:
+      containers:
+        - name: mariadb
+          image: mariadb:latest
+          env:
             - name: MYSQL_ROOT_PASSWORD
-              value: "redhat"  
+              value: "redhat"
             - name: MYSQL_DATABASE
               value: "student_db"
-         ports:  
-          -containerPort: 3306
+          ports:
+            - containerPort: 3306
 
 # --------- Backend ---------
 ---
 apiVersion: v1
 kind: Service
-metadata: 
-  name: Backend
-spec: 
-  selector: 
-     app: Backend
+metadata:
+  name: backend
+spec:
+  selector:
+    app: backend
   ports:
     - port: 8080
-      TargetPort: 8080
-      NodePort: 30080
+      targetPort: 8080
+      nodePort: 30080
   type: NodePort
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: Backend
-spec: 
-  selector: 
+  name: backend
+spec:
+  selector:
     matchLabels:
-      app: Backend
+      app: backend
   template:
     metadata:
-      label:
-       app: Backend
-    spec: 
+      labels:
+        app: backend
+    spec:
       containers:
-        name: Backend
-        image: yugajoshi/student-backend:latest
-        port: 
-          - containerPort: 8080
-        env:
-         - name: DB_HOST
-           value: "MariaDB"
-         - name: DB_PORT
-           value: "3306"
-         - name: DB_NAME
-           value: "student_db"
-         - name: DB_USER
-           value: "root" 
-         - name: DB_PASS
-           value: "redhat" 
-
+        - name: backend
+          image: yugajoshi/student-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "student_db"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASS
+              value: "redhat"
 
 # --------- config.js for Frontend ---------
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: Frontend-config
-  data:
+  name: frontend-config
+data:
   config.js: |
     window.APP_CONFIG = {
       API_URL: "http://54.242.214.85:30080/api"
@@ -101,10 +97,10 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: Frontend
+  name: frontend
 spec:
-  selector: 
-    app: Frontend
+  selector:
+    app: frontend
   ports:
     - port: 80
       targetPort: 80
@@ -114,27 +110,26 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: Frontend
-spec: 
+  name: frontend
+spec:
   selector:
-    matchLabels: 
-     app: Frontend
+    matchLabels:
+      app: frontend
   template:
     metadata:
-     label:
-      app: Frontend
+      labels:
+        app: frontend
     spec:
       containers:
-        - name: Frontend
+        - name: frontend
           image: yugajoshi/student-frontend:latest
           ports:
-           - containerPort: 80
-          volumeMounts: 
-           - name: config-volume
-             mountPath: /var/www/localhost/htdocs/config.js
-             subPath: config.js
-
-      volumes: 
-         - name: config-volume
-           configMap:                
-           - name: frontend-config
+            - containerPort: 80
+          volumeMounts:
+            - name: config-volume
+              mountPath: /var/www/localhost/htdocs/config.js
+              subPath: config.js
+      volumes:
+        - name: config-volume
+          configMap:
+            name: frontend-config
