@@ -1,6 +1,6 @@
 #---------MariaDB---------
 apiVersion: v1
-kind: Services
+kind: Service
 metadata:
   name: MariaDB
 spec: 
