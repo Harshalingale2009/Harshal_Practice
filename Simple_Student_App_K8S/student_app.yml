@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: maria_db
+  name: mariadb
 spec: 
   selector: 
-    app: maria_db
+    app: mariadb
   ports: 
     - port: 3306
       targetPort: 3306
@@ -16,18 +16,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: maria_db
+  name: mariadb
 spec:       
   selector:
     matchLabels: 
-      app: maria_db
+      app: mariadb
   template: 
     metadata:
       labels: 
-        app: maria_db
+        app: mariadb
     spec:
       containers: 
-       - name: maria_db
+       - name: mariadb
          image: mariadb:latest
          env:
             -name: MYSQL_ROOT_PASSWORD
