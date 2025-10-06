@@ -13,27 +13,27 @@ spec:
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
-  name:mariadb
-spec: 
+metadata:
+  name: mariadb
+spec:
   selector:
-    matchLabel:
+    matchLabels:
       app: mariadb
-    template:
-      metadata:
-        labels:
-          app: mariadb
-      spec:
-        containers:
-          - name: mariadb
-            image: mariadb:latest
-            env:  
-              - name: MYSQL_ROOT_PASSWORD
-                value: "redhat"
-              - name: MYSQL_DATABASE
-                value: "student_db"
-            ports:
-              - containerPort: 3306
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:latest
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "redhat"
+            - name: MYSQL_DATABASE
+              value: "student_db"
+          ports:
+            - containerPort: 3306
 
 # --------- Backend ---------
 ---
