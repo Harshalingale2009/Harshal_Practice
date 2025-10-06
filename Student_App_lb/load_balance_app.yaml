@@ -1,10 +1,10 @@
 # --------- MariaDB ---------
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: mariadb
 spec:
-  selector: 
+  selector:
     app: mariadb
   ports:
     - port: 3306
@@ -40,7 +40,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  app: backend
+  name: backend
 spec:
   selector:
     app: backend
@@ -54,8 +54,8 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  selector: 
-    matchLabel:
+  selector:
+    matchLabels:
       app: backend
   template:
     metadata:
@@ -84,11 +84,11 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: frontend
+  name: frontend-config
 data:
-   config.js: |
+  config.js: |
     window.APP_CONFIG = {
-      API_URL: "http://a6350f1f134be43c5a8427bdee93499d-710552852.ap-south-1.elb.amazonaws.com:8080/api"
+      API_URL: "http://my-lb-1262352864.ap-south-1.elb.amazonaws.com:8080/api"
     };
 
 # --------- Frontend ---------
@@ -96,31 +96,31 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend 
-spec: 
+  name: frontend
+spec:
   selector:
-    app: frontend 
+    app: frontend
   ports:
     - port: 80
       targetPort: 80
       nodePort: 30081
-  type: LoadBalancer
-  ---
+  type: LoadBalancer 
+---
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
-  name: frontend 
+metadata:
+  name: frontend
 spec:
   selector:
-    matchLabel:   
-      app: frontend 
+    matchLabels:
+      app: frontend
   template:
     metadata:
       labels:
         app: frontend
     spec:
       containers:
-        - name: frontend  
+        - name: frontend
           image: yugajoshi/student-frontend:latest
           ports:
             - containerPort: 80
@@ -128,7 +128,7 @@ spec:
             - name: config-volume
               mountPath: /var/www/localhost/htdocs/config.js
               subPath: config.js
-        volumes:
+      volumes:
         - name: config-volume
           configMap:
-            name: frontend-config    
+            name: frontend-config
